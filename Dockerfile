@@ -17,13 +17,13 @@ WORKDIR ${APP_HOME}
 
 # Install Ruby gems
 COPY Gemfile Gemfile.lock* ./
-RUN bundle config set --local path 'vendor/bundle' \
- && bundle install --jobs 4 --retry 3
+RUN bundle install && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+    bundle exec bootsnap precompile --gemfile
 
 # Copy the application
 COPY . .
 
 EXPOSE 8010
 
-# Use rackup (config.ru) to run the app
-CMD ["bundle", "exec", "rackup", "-o", "0.0.0.0", "-p", "8010"] 
+CMD ["ruby", "app.rb", "0.0.0.0", "-p", "8010"] 
