@@ -12,9 +12,9 @@ get "/api/qbittorrent/alltime" do
   rescue => e
     halt 502, json(error: "Failed to fetch qBittorrent alltime: #{e}")
   end
-  up_val, up_unit = MsInfo.human_size(totals.uploaded_bytes)
-  dl_val, dl_unit = MsInfo.human_size(totals.downloaded_bytes)
-  json uploaded: up_val, uploaded_unit: up_unit, downloaded: dl_val, downloaded_unit: dl_unit, share_ratio: totals.share_ratio
+  up_val = MsInfo.human_size(totals.uploaded_bytes)
+  dl_val = MsInfo.human_size(totals.downloaded_bytes)
+  json uploaded: up_val, downloaded: dl_val, share_ratio: totals.share_ratio
 end
 
 get "/api/qbittorrent/current" do
@@ -23,9 +23,9 @@ get "/api/qbittorrent/current" do
   rescue => e
     halt 502, json(error: "Failed to fetch qBittorrent totals: #{e}")
   end
-  up_val, up_unit = MsInfo.human_size(totals.uploaded_bytes)
-  dl_val, dl_unit = MsInfo.human_size(totals.downloaded_bytes)
-  json uploaded: up_val, uploaded_unit: up_unit, downloaded: dl_val, downloaded_unit: dl_unit, share_ratio: totals.share_ratio
+  up_val = MsInfo.human_size(totals.uploaded_bytes)
+  dl_val = MsInfo.human_size(totals.downloaded_bytes)
+  json uploaded: up_val, downloaded: dl_val, share_ratio: totals.share_ratio
 end
 
 get "/api/qbittorrent/daily" do

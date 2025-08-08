@@ -116,9 +116,9 @@ module MsInfo
     gb = bytes.to_f / (1024.0 ** 3)
     if gb >= 1024.0
       tb = gb / 1024.0
-      [tb.round(2), "TB"]
+      [tb.round(2), "TB"].join(" ")
     else
-      [gb.round(2), "GB"]
+      [gb.round(2), "GB"].join(" ")
     end
   end
 end
