@@ -10,7 +10,7 @@ class QBTotals
   def share_ratio
     @ratio ||= begin
                  return 0.0 if @downloaded_bytes <= 0
-                 @uploaded_bytes.to_f / @downloaded_bytes.to_f
+                 (@uploaded_bytes.to_f / @downloaded_bytes.to_f).ceil(2)
                end
   end
 end
