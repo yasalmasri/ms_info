@@ -17,8 +17,7 @@ WORKDIR ${APP_HOME}
 
 # Install Ruby gems
 COPY Gemfile Gemfile.lock* ./
-RUN bundle config set --local path 'vendor/bundle' \
- && bundle install --jobs 4 --retry 3
+RUN bundle install
 
 # Copy the application
 COPY . .
