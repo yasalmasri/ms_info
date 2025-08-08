@@ -1,0 +1,44 @@
+get "/health" do
+  json status: "ok"
+end
+
+get "/api/sources" do
+  json ["qbittorrent"]
+end
+
+get "/api/qbittorrent/alltime" do
+  begin
+    totals = CLIENT.fetch_alltime
+  rescue => e
+    halt 502, json(error: "Failed to fetch qBittorrent alltime: #{e}")
+  end
+  up_val, up_unit = MsInfo.human_size(totals.uploaded_bytes)
+  dl_val, dl_unit = MsInfo.human_size(totals.downloaded_bytes)
+  json uploaded: up_val, uploaded_unit: up_unit, downloaded: dl_val, downloaded_unit: dl_unit, share_ratio: totals.share_ratio
+end
+
+get "/api/qbittorrent/current" do
+  begin
+    totals = CLIENT.fetch_totals
+  rescue => e
+    halt 502, json(error: "Failed to fetch qBittorrent totals: #{e}")
+  end
+  up_val, up_unit = MsInfo.human_size(totals.uploaded_bytes)
+  dl_val, dl_unit = MsInfo.human_size(totals.downloaded_bytes)
+  json uploaded: up_val, uploaded_unit: up_unit, downloaded: dl_val, downloaded_unit: dl_unit, share_ratio: totals.share_ratio
+end
+
+get "/api/qbittorrent/daily" do
+  limit = (params["limit"] || 30).to_i
+  rows = DailyStats.order(:record_date).reverse.limit(limit).all
+  json rows.reverse
+end
+
+post "/api/qbittorrent/snapshot" do
+  begin
+    MsInfo.compute_and_store_snapshot
+  rescue => e
+    halt 500, json(error: e.message)
+  end
+  json status: "ok"
+end

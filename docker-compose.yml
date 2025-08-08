@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  ms_info:
+    build: .
+    container_name: ms_info
+    environment:
+      - QB_URL=${QB_URL}
+      - QB_USERNAME=${QB_USERNAME}
+      - QB_PASSWORD=${QB_PASSWORD}
+      - DB_URL=${DB_URL:-sqlite:///data/ms_info.db}
+      - SCHED_TZ=${SCHED_TZ:-local}
+      - SCHED_DAILY_AT=${SCHED_DAILY_AT:-00:05}
+      - HOST=0.0.0.0
+      - PORT=8010
+    ports:
+      - "8010:8010"
+    volumes:
+      - ms_info_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  ms_info_data:
+    driver: local 
