@@ -17,9 +17,8 @@ WORKDIR ${APP_HOME}
 
 # Install Ruby gems
 COPY Gemfile Gemfile.lock* ./
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+RUN bundle config set --local path 'vendor/bundle' \
+ && bundle install --jobs 4 --retry 3
 
 # Copy the application
 COPY . .
