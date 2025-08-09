@@ -20,17 +20,11 @@ class QBittorrentClient
     @base_url = base_url.sub(/\/$/, "")
     @username = username
     @password = password
-
-    @logged_in = false
   end
 
   def ensure_login!
-    return if @logged_in
-
     resp = conn.post("/api/v2/auth/login", { username: @username, password: @password })
     raise "qBittorrent login failed: HTTP #{resp.status}" unless resp.status == 200 && resp.body.to_s.include?("Ok.")
-
-    @logged_in = true
   end
 
   def fetch_totals
