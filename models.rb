@@ -87,8 +87,6 @@ module MsInfo
       )
     end
 
-    puts totals.inspect
-    puts daily_stat
     today_uploaded = totals.uploaded_bytes - daily_stat[:total_uploaded_bytes]
     today_downloaded = totals.downloaded_bytes - daily_stat[:total_downloaded_bytes]
 
