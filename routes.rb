@@ -29,9 +29,10 @@ get "/api/qbittorrent/current" do
 end
 
 get "/api/qbittorrent/daily" do
-  limit = (params["limit"] || 30).to_i
-  rows = DailyStats.order(:record_date).reverse.limit(limit).all
-  json rows.reverse
+  totals = MsInfo.daily_stats
+  up_val = MsInfo.human_size(totals.uploaded_bytes)
+  dl_val = MsInfo.human_size(totals.downloaded_bytes)
+  json uploaded: up_val, downloaded: dl_val, share_ratio: totals.share_ratio
 end
 
 post "/api/qbittorrent/snapshot" do

@@ -67,43 +67,38 @@ end
 module MsInfo
   module_function
 
-  def compute_and_store_snapshot
+  def daily_stat
+    @daily_stat ||= begin
+                      today = Date.today
+                      DailyStats.where(date: today).first
+                    end
+  end
+
+  def daily_stats
+    today = Date.today
     totals = CLIENT.fetch_totals
 
-    today = Date.today
-    prev = DailyStats.where { record_date < today }.order(Sequel.desc(:record_date)).first
-
-    daily_uploaded = 0
-    daily_downloaded = 0
-    if prev
-      daily_uploaded = [0, totals.uploaded_bytes - (prev[:total_uploaded_bytes] || 0)].max
-      daily_downloaded = [0, totals.downloaded_bytes - (prev[:total_downloaded_bytes] || 0)].max
-    end
-
-    total_share_ratio = totals.downloaded_bytes > 0 ? (totals.uploaded_bytes.to_f / totals.downloaded_bytes.to_f) : 0.0
-    daily_share_ratio = daily_downloaded > 0 ? (daily_uploaded.to_f / daily_downloaded.to_f) : 0.0
-
-    current_today = DailyStats.where(record_date: today).first
-    if current_today
-      DailyStats.where(id: current_today[:id]).update(
-        total_uploaded_bytes: totals.uploaded_bytes,
-        total_downloaded_bytes: totals.downloaded_bytes,
-        total_share_ratio: total_share_ratio,
-        daily_uploaded_bytes: daily_uploaded,
-        daily_downloaded_bytes: daily_downloaded,
-        daily_share_ratio: daily_share_ratio
-      )
-    else
+    if daily_stat.nil?
       DailyStats.insert(
-        record_date: today,
+        date: today,
         total_uploaded_bytes: totals.uploaded_bytes,
         total_downloaded_bytes: totals.downloaded_bytes,
-        total_share_ratio: total_share_ratio,
-        daily_uploaded_bytes: daily_uploaded,
-        daily_downloaded_bytes: daily_downloaded,
-        daily_share_ratio: daily_share_ratio
+        total_share_ratio: totals.share_ratio
       )
     end
+
+    today_uploaded = totals.uploaded_bytes - daily_stat[:total_uploaded_bytes]
+    today_downloaded = totals.downloaded_bytes - daily_stat[:total_downloaded_bytes]
+
+    QBTotals.new(
+      uploaded_bytes: today_uploaded,
+      downloaded_bytes: today_downloaded
+    )
+  end
+
+  def create_daily_stats
+    today = Date.today
+    DailyStats.insert(date: today)
   end
 
   def human_size(bytes)
