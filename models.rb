@@ -87,6 +87,8 @@ module MsInfo
       )
     end
 
+    puts totals.inspect
+    puts daily_stat
     today_uploaded = totals.uploaded_bytes - daily_stat[:total_uploaded_bytes]
     today_downloaded = totals.downloaded_bytes - daily_stat[:total_downloaded_bytes]
 
@@ -98,7 +100,13 @@ module MsInfo
 
   def create_daily_stats
     today = Date.today
-    DailyStats.insert(date: today)
+    totals = CLIENT.fetch_alltime
+    DailyStats.insert(
+      date: today,
+      total_uploaded_bytes: totals.uploaded_bytes,
+      total_downloaded_bytes: totals.downloaded_bytes,
+      total_share_ratio: totals.share_ratio
+    )
   end
 
   def human_size(bytes)
