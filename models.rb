@@ -76,7 +76,7 @@ module MsInfo
 
   def daily_stats
     today = Date.today
-    totals = CLIENT.fetch_totals
+    totals = CLIENT.fetch_alltime
 
     if daily_stat.nil?
       DailyStats.insert(
