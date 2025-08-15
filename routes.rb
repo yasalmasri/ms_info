@@ -37,7 +37,7 @@ end
 
 post "/api/qbittorrent/snapshot" do
   begin
-    MsInfo.compute_and_store_snapshot
+    MsInfo.create_daily_stats
   rescue => e
     halt 500, json(error: e.message)
   end
