@@ -67,16 +67,10 @@ end
 module MsInfo
   module_function
 
-  def daily_stat
-    @daily_stat ||= begin
-                      today = Date.today
-                      DailyStats.where(date: today).first
-                    end
-  end
-
   def daily_stats
     today = Date.today
     totals = CLIENT.fetch_alltime
+    daily_stat = DailyStats.where(date: today).first
 
     if daily_stat.nil?
       DailyStats.insert(
@@ -85,6 +79,7 @@ module MsInfo
         total_downloaded_bytes: totals.downloaded_bytes,
         total_share_ratio: totals.share_ratio
       )
+      daily_stat = DailyStats.where(date: today).first
     end
 
     today_uploaded = totals.uploaded_bytes - daily_stat[:total_uploaded_bytes]
