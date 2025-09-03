@@ -27,6 +27,7 @@ SCHED_DAILY_AT = ENV.fetch("SCHED_DAILY_AT", "00:01")
 
 require_relative "./db"
 require_relative "./models"
+require_relative "./telegram"
 require_relative "./routes"
 
 configure do

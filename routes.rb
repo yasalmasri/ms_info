@@ -43,3 +43,30 @@ post "/api/qbittorrent/snapshot" do
   end
   json status: "ok"
 end
+
+get "/api/radarr/calendar" do
+  telegram_chat = ENV["TELEGRAM_CHAT"]
+
+  apikey = ENV["RADARR_API_KEY"]
+  radar_base_url = ENV["RADARR_URL"]
+  calendar_url = "/api/v3/calendar"
+
+  conn = Faraday.new(url: radar_base_url)
+  resp = conn.get(calendar_url, { apikey: })
+  data = JSON.parse(resp.body)
+  data.each do |movie|
+    next if movie["digitalRelease"].nil?
+
+    digital_release = Time.iso8601(movie["digitalRelease"]).localtime.to_date
+    next unless digital_release == Date.today
+
+    title = movie["title"]
+    poster = movie.dig("images", 0, "remoteUrl")
+    puts Telegram.send(text: "#{title}\n#{poster}", chat_id: telegram_chat).body
+  rescue StandardError => e
+    puts e.message
+    puts e.backtrace.first 10
+  end
+
+  json status: "ok"
+end
