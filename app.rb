@@ -26,8 +26,9 @@ QB_PASSWORD = ENV.fetch("QB_PASSWORD") { raise "QB_PASSWORD env var is required"
 SCHED_DAILY_AT = ENV.fetch("SCHED_DAILY_AT", "00:01")
 
 require_relative "./db"
-require_relative "./models"
 require_relative "./telegram"
+require_relative "./models"
+require_relative "./radarr"
 require_relative "./routes"
 
 configure do
@@ -35,6 +36,7 @@ configure do
   hour, minute = SCHED_DAILY_AT.split(":", 2).map(&:to_i)
   cron = "#{minute} #{hour} * * *"
   scheduler.cron(cron) { MsInfo.create_daily_stats rescue warn($!.message) }
+  scheduler.cron("15 0 * * *") { Radarr.new.releases rescue warn($!.message) }
 
   Thread.new do
     begin
