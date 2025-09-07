@@ -41,6 +41,7 @@ configure do
   Thread.new do
     begin
       MsInfo.create_daily_stats
+      Radarr.new.releases
     rescue => e
       warn("[scheduler] Warm-up snapshot failed: #{e}")
     end
