@@ -1,6 +1,7 @@
 class Radarr
   def releases
     releases = []
+    puts "Movies: #{movies.count}"
     movies.each do |movie|
       next if movie["digitalRelease"].nil?
 
@@ -16,6 +17,7 @@ class Radarr
       puts e.backtrace.first 10
     end
 
+    puts "Releases: #{releases.count}"
     if releases.any?
       text = "Today's Releases:" + releases.join
       puts Telegram.send(text).body
